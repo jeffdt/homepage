@@ -73,7 +73,8 @@ h2 {
 }
 
 .project a {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 1rem 1.25rem;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -85,6 +86,36 @@ h2 {
 .project a:hover {
   border-color: var(--accent);
   background: #11161d;
+}
+
+.info {
+  display: block;
+  flex: 1;
+  min-width: 0;
+}
+
+.preview {
+  display: block;
+  width: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  transition: width 0.2s ease, margin-left 0.2s ease;
+}
+
+.preview img {
+  display: block;
+  width: 140px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+@media (hover: hover) {
+  .project:hover .preview {
+    width: 140px;
+    margin-left: 1.25rem;
+  }
 }
 
 .name {
