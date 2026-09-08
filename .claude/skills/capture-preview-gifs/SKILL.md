@@ -7,11 +7,19 @@ description: Use when creating or refreshing an animated GIF in assets/previews/
 
 Every project card can have a `.preview` GIF (`assets/previews/<project>.gif`, referenced via `data-src` in `index.html`). There are two capture paths depending on the project type. Pick one, then run both projects' assets through the same compression and QA steps.
 
-## Path A: CLI tools (VHS tape)
+## Path A: CLI tools (VHS tape, live-linked)
 
-rolomux, boomerang, teleport already have `docs/demo/*.tape` scripts in their own repos that render to `docs/images/*.gif` (used in their READMEs). Don't re-record here — just copy the existing rendered GIF into this repo's `assets/previews/`.
+rolomux, boomerang, teleport already have `docs/demo/*.tape` scripts in their own repos that render to `docs/images/*.gif` (used in their READMEs). This repo is touched rarely while those repos iterate often, so `index.html` points `data-src` directly at the source repo's rendered GIF via jsDelivr's GitHub CDN rather than keeping a local copy that would silently go stale:
 
-If a CLI tool has no `.tape` script yet (e.g. backlog), that's real work in the *other* repo: write the VHS tape there, decide what to feed it as demo input/data, render it, then copy the output here. Don't fabricate a recording by any other method.
+```
+https://cdn.jsdelivr.net/gh/jeffdt/<repo>@main/docs/images/<file>.gif
+```
+
+No separate "compressed preview" variant is needed in the source repos: VHS terminal recordings already compress to tens-to-low-hundreds of KB thanks to their limited native color palette (verified against rolomux/boomerang/teleport's existing demo GIFs, all well under the web-capture GIFs' size despite larger pixel dimensions than the 480px display width — the browser just downscales). If a future tape balloons past ~300KB, revisit before shipping it as a live-linked preview.
+
+jsDelivr edge-caches for up to 12h (`s-maxage=43200`) and browsers for 7 days, so a fresh re-record in the source repo won't show up on the homepage instantly — that's fine given how rarely this repo needs the update to actually be visible, but don't expect it to reflect within minutes of a push.
+
+If a CLI tool has no `.tape` script yet (e.g. backlog), that's real work in the *other* repo: write the VHS tape there (see `tui-utils`' shared `vhs-recording` skill), decide what to feed it as demo input/data, render it, then point `index.html` at it the same way. Don't fabricate a recording by any other method, and don't copy the GIF into this repo's `assets/previews/`.
 
 ## Path B: web apps (live Playwright capture)
 
@@ -71,6 +79,6 @@ Append a subsection here whenever a new tool gets a preview — this list is exp
 
 **discography** — click the `Randomize` button rather than trying to navigate directories by double-click (unreliable/flaky in headless Chromium, not worth debugging further). Launch Chromium with `--autoplay-policy=no-user-gesture-required` or the AudioContext stays suspended and the visualizer never animates. The visualizer's CRT grain overlay animates every frame, which is unusually hostile to GIF compression — use the more aggressive compression settings from above (low colors, no dither).
 
-**rolomux / boomerang / teleport** — Path A (VHS), already recorded in their own repos. Just copy `docs/images/*.gif` from the source repo into `assets/previews/`.
+**rolomux / boomerang / teleport** — Path A (VHS), live-linked from their own repos via jsDelivr, no local copy. Currently pointing at `search.gif`, `quick-capture.gif`, and `worktree.gif` respectively — those were picked as the most demonstrative single tape per tool, not the only one available (each repo has 2-3 demo tapes; see its `docs/demo/`).
 
 **backlog** — no capture path yet. Needs a new `.tape` script written in that repo first, plus a decision on real synced library data vs. fabricated placeholder titles before either path applies.
