@@ -8,6 +8,8 @@ if (window.matchMedia("(hover: hover)").matches) {
     if (!preview) return;
 
     const img = preview.querySelector("img");
+    // Cards tilt in 3D, and a transformed ancestor would trap this fixed-position preview.
+    document.body.appendChild(preview);
 
     function position() {
       const cardRect = project.getBoundingClientRect();
