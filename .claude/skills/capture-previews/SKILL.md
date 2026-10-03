@@ -83,6 +83,6 @@ Append a subsection here whenever a new tool gets a preview — this list is exp
 
 **discography** — click the `Randomize` button rather than trying to navigate directories by double-click (unreliable/flaky in headless Chromium, not worth debugging further). Launch Chromium with `--autoplay-policy=no-user-gesture-required` or the AudioContext stays suspended and the visualizer never animates. The visualizer takes ~2s to fill after Randomize, so start the clip around 2.5s into the recording. The CRT grain overlay that wrecked GIF compression is a non-issue for H.264.
 
-**rolomux / boomerang / teleport** — Path A (VHS), live-linked from their own repos via jsDelivr, no local copy. Currently pointing at `search.gif`, `quick-capture.gif`, and `worktree.gif` respectively — those were picked as the most demonstrative single tape per tool, not the only one available (each repo has 2-3 demo tapes; see its `docs/demo/`).
+**rolomux / boomerang / teleport** — Path A (VHS), live-linked from their own repos via jsDelivr, no local copy. Currently pointing at `organize.gif`, `quick-capture.gif`, and `worktree.gif` respectively — those were picked as the most demonstrative single tape per tool, not the only one available (each repo has 2-3 demo tapes; see its `docs/demo/`).
 
 **backlog** — no capture path yet. Needs a new `.tape` script written in that repo first, plus a decision on real synced library data vs. fabricated placeholder titles before either path applies.
