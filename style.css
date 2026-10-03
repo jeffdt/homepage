@@ -1,9 +1,9 @@
 :root {
-  --bg: #0d1117;
-  --fg: #c9d1d9;
-  --muted: #8b949e;
-  --accent: #58a6ff;
-  --border: #21262d;
+  --bg: #282c34;
+  --fg: #ffffff;
+  --muted: #c5c8c6;
+  --accent: #7aa6da;
+  --border: #666666;
 }
 
 * {
@@ -51,18 +51,6 @@ h1 {
   color: var(--muted);
 }
 
-section + section {
-  margin-top: 2rem;
-}
-
-h2 {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--muted);
-  margin: 0 0 0.75rem;
-  text-transform: lowercase;
-}
-
 .projects {
   list-style: none;
   margin: 0;
@@ -85,7 +73,7 @@ h2 {
 
 .project a:hover {
   border-color: var(--accent);
-  background: #11161d;
+  background: #1d1f21;
 }
 
 .info {
@@ -107,7 +95,7 @@ h2 {
   border: 1px solid var(--border);
   border-radius: 8px;
   overflow: hidden;
-  background: #11161d;
+  background: #1d1f21;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   z-index: 50;
 }
@@ -147,3 +135,28 @@ h2 {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.tag {
+  --c: var(--muted);
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  color: var(--c);
+  font-size: 0.75rem;
+}
+
+.tag-tmux { --c: #b5bd68; }
+.tag-cli { --c: #7aa6da; }
+.tag-git { --c: #d54e53; }
+.tag-games { --c: #c397d8; }
+.tag-cnc { --c: #f0c674; }
+.tag-web { --c: #8abeb7; }
+.tag-music { --c: #d787af; }

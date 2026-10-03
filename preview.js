@@ -1,5 +1,7 @@
 if (window.matchMedia("(hover: hover)").matches) {
   const GAP = 16;
+  const MAX_WIDTH = 480;
+  const MIN_SIDE_WIDTH = 240;
 
   document.querySelectorAll(".project").forEach((project) => {
     const preview = project.querySelector(".preview");
@@ -9,26 +11,36 @@ if (window.matchMedia("(hover: hover)").matches) {
 
     function position() {
       const cardRect = project.getBoundingClientRect();
-      const previewRect = preview.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
 
-      let left;
-      if (cardRect.right + GAP + previewRect.width <= vw) {
-        left = cardRect.right + GAP;
-      } else if (cardRect.left - GAP - previewRect.width >= 0) {
-        left = cardRect.left - GAP - previewRect.width;
-      } else {
-        left = Math.max(GAP, (vw - previewRect.width) / 2);
-      }
+      const spaceRight = vw - cardRect.right - GAP * 2;
+      const spaceLeft = cardRect.left - GAP * 2;
+      const sideSpace = Math.max(spaceRight, spaceLeft);
 
-      let top = cardRect.top;
-      if (top + previewRect.height > vh - GAP) {
-        top = Math.max(GAP, vh - GAP - previewRect.height);
+      let left;
+      let top;
+
+      if (sideSpace >= MIN_SIDE_WIDTH) {
+        preview.style.width = `${Math.min(MAX_WIDTH, sideSpace)}px`;
+        const previewRect = preview.getBoundingClientRect();
+        left =
+          spaceRight >= spaceLeft
+            ? cardRect.right + GAP
+            : cardRect.left - GAP - previewRect.width;
+        top = Math.min(cardRect.top, vh - GAP - previewRect.height);
+      } else {
+        preview.style.width = `${Math.min(MAX_WIDTH, vw - GAP * 2)}px`;
+        const previewRect = preview.getBoundingClientRect();
+        left = Math.max(GAP, Math.min(cardRect.left, vw - GAP - previewRect.width));
+        const below = cardRect.bottom + GAP;
+        const above = cardRect.top - GAP - previewRect.height;
+        top = below + previewRect.height <= vh - GAP || above < GAP ? below : above;
+        top = Math.min(top, vh - GAP - previewRect.height);
       }
 
       preview.style.left = `${left}px`;
-      preview.style.top = `${top}px`;
+      preview.style.top = `${Math.max(GAP, top)}px`;
     }
 
     project.addEventListener("mouseenter", () => {
