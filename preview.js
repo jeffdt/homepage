@@ -7,7 +7,8 @@ if (window.matchMedia("(hover: hover)").matches) {
     const preview = project.querySelector(".preview");
     if (!preview) return;
 
-    const img = preview.querySelector("img");
+    const media = preview.querySelector("img, video");
+    const isVideo = media.tagName === "VIDEO";
     // Cards tilt in 3D, and a transformed ancestor would trap this fixed-position preview.
     document.body.appendChild(preview);
 
@@ -46,16 +47,21 @@ if (window.matchMedia("(hover: hover)").matches) {
     }
 
     project.addEventListener("mouseenter", () => {
-      if (!img.src) img.src = img.dataset.src;
+      if (!media.getAttribute("src")) media.src = media.dataset.src;
       preview.classList.add("visible");
       position();
+      if (isVideo) {
+        media.currentTime = 0;
+        media.play().catch(() => {});
+      }
     });
 
     project.addEventListener("mouseleave", () => {
       preview.classList.remove("visible");
+      if (isVideo) media.pause();
     });
 
-    img.addEventListener("load", () => {
+    media.addEventListener(isVideo ? "loadedmetadata" : "load", () => {
       if (preview.classList.contains("visible")) position();
     });
 

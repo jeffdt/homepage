@@ -199,7 +199,8 @@ h1 {
   transform: translateY(0);
 }
 
-.preview img {
+.preview img,
+.preview video {
   display: block;
   width: 100%;
   height: auto;
