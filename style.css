@@ -211,13 +211,13 @@ h1 {
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(122, 166, 218, 0.2), transparent 70%);
+  background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--c) 20%, transparent), transparent 70%);
   opacity: 0;
   transition: opacity 0.25s ease;
 }
 
 .project a:hover {
-  border-color: var(--accent);
+  border-color: var(--c);
   background: rgba(29, 31, 33, 0.75);
 }
 
@@ -299,7 +299,7 @@ h1 {
 }
 
 /* rolomux: the rolodex flips through session cards, each with its own lines and selected row */
-.glyph-rolomux { --c: #b5bd68; }
+.project-rolomux { --c: #b5bd68; }
 
 .glyph .rl-card { transform-origin: 16px 22px; }
 .rl-back { --stagger: 0.2s; }
@@ -353,7 +353,7 @@ h1 {
  * 14.75,16, r 13.27) and stop short of the ring; the flight paths add a short
  * drop into and out of the ring.
  */
-.glyph-boomerang { --c: #de935f; }
+.project-boomerang { --c: #de935f; }
 
 .bm-arc { opacity: 0.45; }
 .bm-person { --stagger: 0.1s; }
@@ -439,7 +439,7 @@ h1 {
 }
 
 /* teleport: the dot drops into one portal and steps out of the other */
-.glyph-teleport { --c: #7aa6da; }
+.project-teleport { --c: #7aa6da; }
 
 .tp-ring { fill: currentColor; }
 .tp-in, .tp-out { fill-opacity: 0.14; }
@@ -475,7 +475,7 @@ h1 {
 }
 
 /* backlog: the cursor fuzzy-searches a neat shelf of games and pulls one out */
-.glyph-backlog { --c: #c397d8; }
+.project-backlog { --c: #c397d8; }
 
 .bl-2 { --stagger: 0.12s; }
 .bl-3 { --stagger: 0.24s; }
@@ -499,7 +499,7 @@ h1 {
 }
 
 /* rastermaster: the spindle cuts the serpentine toolpath */
-.glyph-rastermaster { --c: #f0c674; }
+.project-rastermaster { --c: #f0c674; }
 
 .rm-path { transition: opacity 0.3s ease; }
 
@@ -537,7 +537,7 @@ h1 {
  * vertically, and the square wave it leaves scrolls left. Risers slant 0.75
  * units so the trace matches the pen's travel.
  */
-.glyph-discography { --c: #d787af; }
+.project-discography { --c: #d787af; }
 
 /* the left fade is a CSS mask on the svg box; an SVG <mask> gradient was misplaced on the scrolling group */
 .glyph-discography svg {
@@ -596,7 +596,7 @@ h1 {
 
 .name::before {
   content: "$ ";
-  color: var(--accent);
+  color: var(--c);
 }
 
 .desc {
@@ -608,7 +608,7 @@ h1 {
 
 .link {
   display: block;
-  color: var(--accent);
+  color: var(--c);
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
@@ -621,22 +621,13 @@ h1 {
 }
 
 .tag {
-  --c: var(--muted);
   padding: 0.1rem 0.55rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--c) 45%, transparent);
-  background: color-mix(in srgb, var(--c) 14%, transparent);
-  color: var(--c);
+  border: 1px solid color-mix(in srgb, var(--muted) 45%, transparent);
+  background: color-mix(in srgb, var(--muted) 14%, transparent);
+  color: var(--muted);
   font-size: 0.75rem;
 }
-
-.tag-tmux { --c: #b5bd68; }
-.tag-cli { --c: #7aa6da; }
-.tag-git { --c: #d54e53; }
-.tag-games { --c: #c397d8; }
-.tag-cnc { --c: #f0c674; }
-.tag-web { --c: #8abeb7; }
-.tag-music { --c: #d787af; }
 
 /*
  * Touch screens can't hover, so every glyph stays lit and loops once its
