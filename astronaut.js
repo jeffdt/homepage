@@ -41,6 +41,10 @@ const WALL_DAMPING = 1.2;
 const MAX_OVERSHOOT_FRACTION = 0.75;
 // Caps the step after a backgrounded tab resumes so he doesn't teleport.
 const MAX_FRAME_SEC = 0.1;
+// Launch speed for his entrance from offscreen; relax() eases it back to a drift.
+const ENTRY_SPEED_PX_PER_SEC = 90;
+// He aims for a random point within this centered fraction of the screen, so entrances vary.
+const ENTRY_TARGET_FRACTION = 0.5;
 
 const prefersStill = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -57,11 +61,9 @@ if (astronaut && !prefersStill) {
   let flailRate = 1;
   let touchingWallX = false;
   let touchingWallY = false;
-  const heading = Math.random() * Math.PI * 2;
-  let x = Math.random() * Math.max(0, window.innerWidth - size);
-  let y = Math.random() * Math.max(0, window.innerHeight - size);
-  let vx = Math.cos(heading) * SPEED_PX_PER_SEC;
-  let vy = Math.sin(heading) * SPEED_PX_PER_SEC;
+  let { x, y, vx, vy } = entryPath();
+  // Walls and the overshoot clamp stay off until he has floated in, or they'd yank him onscreen.
+  let entering = true;
   let angle = Math.random() * 360;
   let baseSpin = randomSpin();
   let spinKick = 0;
@@ -97,6 +99,31 @@ if (astronaut && !prefersStill) {
   window.addEventListener("pointercancel", () => {
     pointer = null;
   });
+
+  /** Returns a start point just past a random screen edge and a velocity aimed at a spot near the middle. */
+  function entryPath() {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const margin = size * 0.5;
+    const edge = Math.floor(Math.random() * 4);
+    const along = Math.random();
+    const start = [
+      { x: -size - margin, y: along * (height - size) },
+      { x: width + margin, y: along * (height - size) },
+      { x: along * (width - size), y: -size - margin },
+      { x: along * (width - size), y: height + margin },
+    ][edge];
+    const spread = (1 - ENTRY_TARGET_FRACTION) / 2;
+    const targetX = (spread + Math.random() * ENTRY_TARGET_FRACTION) * width - size / 2;
+    const targetY = (spread + Math.random() * ENTRY_TARGET_FRACTION) * height - size / 2;
+    const distance = Math.hypot(targetX - start.x, targetY - start.y) || 1;
+    return {
+      x: start.x,
+      y: start.y,
+      vx: ((targetX - start.x) / distance) * ENTRY_SPEED_PX_PER_SEC,
+      vy: ((targetY - start.y) / distance) * ENTRY_SPEED_PX_PER_SEC,
+    };
+  }
 
   /** Returns a gentle spin rate in deg/s, in either direction. */
   function randomSpin() {
@@ -193,8 +220,14 @@ if (astronaut && !prefersStill) {
     updateFlail();
     moveLimbs(dt);
 
-    const ax = wallAccel(x, vx, maxX);
-    const ay = wallAccel(y, vy, maxY);
+    if (entering) {
+      const insideX = x >= -WALL_OVERLAP_PX && x <= maxX + WALL_OVERLAP_PX;
+      const insideY = y >= -WALL_OVERLAP_PX && y <= maxY + WALL_OVERLAP_PX;
+      entering = !(insideX && insideY);
+    }
+
+    const ax = entering ? 0 : wallAccel(x, vx, maxX);
+    const ay = entering ? 0 : wallAccel(y, vy, maxY);
     vx += ax * dt;
     vy += ay * dt;
     // A fresh contact with a wall knocks him into a new lazy spin.
@@ -207,13 +240,22 @@ if (astronaut && !prefersStill) {
     y += vy * dt;
     angle += (baseSpin + spinKick) * dt;
 
-    const overshoot = size * MAX_OVERSHOOT_FRACTION;
-    x = Math.min(Math.max(x, -overshoot), maxX + overshoot);
-    y = Math.min(Math.max(y, -overshoot), maxY + overshoot);
+    if (!entering) {
+      const overshoot = size * MAX_OVERSHOOT_FRACTION;
+      x = Math.min(Math.max(x, -overshoot), maxX + overshoot);
+      y = Math.min(Math.max(y, -overshoot), maxY + overshoot);
+    }
 
-    astronaut.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+    place();
     requestAnimationFrame(step);
   }
 
+  /** Writes his current position and rotation to the page. */
+  function place() {
+    astronaut.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
+  }
+
+  // Positions him offscreen before the first paint so he never flashes at the CSS resting pose.
+  place();
   requestAnimationFrame(step);
 }
