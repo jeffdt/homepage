@@ -561,6 +561,47 @@ h1 {
 .tag-web { --c: #8abeb7; }
 .tag-music { --c: #d787af; }
 
+/*
+ * Touch screens can't hover, so every glyph stays lit and loops once its
+ * draw-in finishes. These mirror the hover rules above; keep them in sync.
+ */
+@media (hover: none) {
+  .glyph {
+    --loop-delay: calc(var(--d) + 1.2s);
+    color: var(--c);
+  }
+
+  .project a .rl-card { animation: rl-flip 3.2s ease-in-out var(--loop-delay) infinite; }
+  .project a .rl-dot { animation: rl-row 3.2s steps(1, end) var(--loop-delay) infinite; }
+  .project a .rl-l2 { animation: rl-l2 3.2s steps(1, end) var(--loop-delay) infinite; }
+  .project a .rl-l3 { animation: rl-l3 3.2s steps(1, end) var(--loop-delay) infinite; }
+
+  .project a .bm-out { animation: bm-out 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bm-spark { animation: bm-spark 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bm-rays { animation: bm-rays 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bm-ring { animation: bm-ring 2.8s ease-out var(--loop-delay) infinite; }
+  .project a .bm-core { animation: bm-core 2.8s ease-out var(--loop-delay) infinite; }
+  .project a .bm-return { animation: bm-return 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bm-card { animation: bm-card 2.8s ease-in-out var(--loop-delay) infinite; }
+
+  .project a .tp-dot { animation: tp-hop 2.4s ease-in-out var(--loop-delay) infinite; }
+  .project a .tp-in { animation: tp-flash-in 2.4s ease-out var(--loop-delay) infinite; }
+  .project a .tp-out { animation: tp-flash-out 2.4s ease-out var(--loop-delay) infinite; }
+
+  .project a .bl-dot { animation: bl-seek 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bl-pick { animation: bl-pull 2.8s ease-in-out var(--loop-delay) infinite; }
+
+  .project a .rm-path { opacity: 0.3; }
+  .project a .rm-cut { animation: rm-cut 2.6s linear var(--loop-delay) infinite; }
+  .project a .rm-dot { animation: rm-spindle 2.6s linear var(--loop-delay) infinite; }
+
+  .project a .pen-trace {
+    animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.2s linear var(--loop-delay) infinite;
+  }
+  .project a .pen-wave { animation: pen-scroll 1.2s linear var(--loop-delay) infinite; }
+  .project a .pen-dot { animation: pen-ride 1.2s linear var(--loop-delay) infinite; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   body::before,
   .title,
