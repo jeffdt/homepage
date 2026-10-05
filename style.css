@@ -85,6 +85,65 @@ h1 {
   60%, 100% { background-position: 0% 0; }
 }
 
+.astronaut {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  width: 81px;
+  height: 81px;
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 12px rgba(195, 151, 216, 0.35));
+  overflow: visible;
+  transform: translate(calc(100vw - 120px), calc(100vh - 120px)) rotate(-18deg);
+  will-change: transform;
+}
+
+.astronaut .limb,
+.astronaut .antenna,
+.astronaut .signal,
+.astronaut .tip {
+  transform-box: view-box;
+}
+
+.astronaut .far-arm { transform-origin: 23px 35px; }
+.astronaut .near-arm { transform-origin: 42px 36px; }
+.astronaut .far-leg { transform-origin: 28px 49px; }
+.astronaut .near-leg { transform-origin: 37px 49px; }
+.astronaut .antenna { transform-origin: 40px 10.5px; animation: sway-antenna 1.9s ease-in-out infinite; }
+
+.astronaut .signal {
+  transform-origin: 43px 4.5px;
+  opacity: 0;
+  vector-effect: non-scaling-stroke;
+  animation: broadcast 7s ease-out 1.5s infinite;
+}
+
+.astronaut .signal + .signal { animation-delay: 2.1s; }
+
+.astronaut .tip {
+  transform-origin: 43px 4.5px;
+  animation: blink 7s ease-out 1.5s infinite;
+}
+
+@keyframes sway-antenna {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(-10deg); }
+}
+
+@keyframes broadcast {
+  0% { opacity: 0; transform: scale(0.4); }
+  3% { opacity: 0.9; }
+  45%, 100% { opacity: 0; transform: scale(7); }
+}
+
+@keyframes blink {
+  0%, 12%, 100% { fill: #8abeb7; transform: scale(1); }
+  3% { fill: #ffffff; transform: scale(1.5); }
+}
+
 .project {
   animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
   animation-delay: calc(0.6s + var(--i, 0) * 80ms);
@@ -471,43 +530,43 @@ h1 {
 
 /*
  * The trace ends exactly under the pen via its dash length, not a clip, so
- * steep risers never get sliced. Lengths are real path units: flats are 5.25,
- * risers are hypot(0.75, 10) = 10.028, and the pen sits 61.112 units in (two
+ * steep risers never get sliced. Lengths are real path units: flats are 6.25,
+ * risers are hypot(0.75, 10) = 10.028, and the pen sits 65.112 units in (two
  * full periods) at rest.
  */
 .pen-trace {
-  stroke-dasharray: 61.112 1000;
+  stroke-dasharray: 65.112 1000;
   animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both;
 }
 
 /* pen-draw stays in the list so un-hovering doesn't replay the load draw-in */
 .project a:is(:hover, :focus-visible) .pen-trace {
-  animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.2s linear infinite;
+  animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.4s linear infinite;
 }
-.project a:is(:hover, :focus-visible) .pen-wave { animation: pen-scroll 1.2s linear infinite; }
-.project a:is(:hover, :focus-visible) .pen-dot { animation: pen-ride 1.2s linear infinite; }
+.project a:is(:hover, :focus-visible) .pen-wave { animation: pen-scroll 1.4s linear infinite; }
+.project a:is(:hover, :focus-visible) .pen-dot { animation: pen-ride 1.4s linear infinite; }
 
 @keyframes pen-draw {
   from { stroke-dasharray: 0 1000; }
-  to { stroke-dasharray: 61.112 1000; }
+  to { stroke-dasharray: 65.112 1000; }
 }
 
 @keyframes pen-trace {
-  0% { stroke-dasharray: 61.112 1000; }
-  43.75% { stroke-dasharray: 66.362 1000; }
-  50% { stroke-dasharray: 76.39 1000; }
-  93.75% { stroke-dasharray: 81.64 1000; }
-  100% { stroke-dasharray: 91.669 1000; }
+  0% { stroke-dasharray: 65.112 1000; }
+  44.64% { stroke-dasharray: 71.362 1000; }
+  50% { stroke-dasharray: 81.39 1000; }
+  94.64% { stroke-dasharray: 87.64 1000; }
+  100% { stroke-dasharray: 97.669 1000; }
 }
 
 @keyframes pen-scroll {
-  to { transform: translateX(-12px); }
+  to { transform: translateX(-14px); }
 }
 
-/* the wave at x=24 over one 12-unit period: high 5.25, fall 0.75, low 5.25, rise 0.75 */
+/* the wave at x=24 over one 14-unit period: high 6.25, fall 0.75, low 6.25, rise 0.75 */
 @keyframes pen-ride {
-  0%, 43.75% { transform: translateY(0); }
-  50%, 93.75% { transform: translateY(10px); }
+  0%, 44.64% { transform: translateY(0); }
+  50%, 94.64% { transform: translateY(10px); }
   100% { transform: translateY(0); }
 }
 
@@ -596,15 +655,16 @@ h1 {
   .project a .rm-dot { animation: rm-spindle 2.6s linear var(--loop-delay) infinite; }
 
   .project a .pen-trace {
-    animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.2s linear var(--loop-delay) infinite;
+    animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.4s linear var(--loop-delay) infinite;
   }
-  .project a .pen-wave { animation: pen-scroll 1.2s linear var(--loop-delay) infinite; }
-  .project a .pen-dot { animation: pen-ride 1.2s linear var(--loop-delay) infinite; }
+  .project a .pen-wave { animation: pen-scroll 1.4s linear var(--loop-delay) infinite; }
+  .project a .pen-dot { animation: pen-ride 1.4s linear var(--loop-delay) infinite; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   body::before,
   .title,
+  .astronaut *,
   .project,
   .glyph,
   .glyph * {
