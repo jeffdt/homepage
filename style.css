@@ -77,34 +77,12 @@ h1 {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 8s ease-in-out 1s infinite;
+  animation: shimmer 2.4s ease-in-out 1s infinite;
 }
 
 @keyframes shimmer {
   0% { background-position: 100% 0; }
-  40%, 100% { background-position: 0% 0; }
-}
-
-.cursor {
-  color: var(--accent);
-  animation: blink 1.1s steps(1) infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-.tagline {
-  margin: 0.4rem 0 0;
-  color: var(--muted);
-  width: 17ch;
-  white-space: nowrap;
-  overflow: hidden;
-  animation: type 1.2s steps(17) 0.3s both;
-}
-
-@keyframes type {
-  from { width: 0; }
+  60%, 100% { background-position: 0% 0; }
 }
 
 .project {
@@ -176,34 +154,361 @@ h1 {
   min-width: 0;
 }
 
-.preview {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 480px;
-  max-width: min(480px, 90vw);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-4px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  background: #1d1f21;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
-  z-index: 50;
+/*
+ * Project glyphs: 32x32 viewBox, 2-unit round strokes, a compact line drawing
+ * plus one dot. Each draws in with its project color on load, settles to gray,
+ * and lights up and loops while its card is hovered or focused.
+ */
+.glyph {
+  --d: calc(0.9s + var(--i, 0) * 80ms);
+  --rest: #80858d;
+  --hot: color-mix(in srgb, currentColor 35%, white);
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-right: 1.1rem;
+  color: var(--rest);
+  transition: color 0.3s ease;
+  animation: settle 0.8s ease calc(var(--d) + 1.3s) backwards;
 }
 
-.preview.visible {
-  opacity: 1;
-  transform: translateY(0);
+.project a:is(:hover, :focus-visible) .glyph {
+  color: var(--c);
 }
 
-.preview img,
-.preview video {
+.glyph svg {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.glyph .dot {
+  fill: currentColor;
+  stroke: none;
+  filter: drop-shadow(0 0 1.5px currentColor);
+}
+
+.glyph .vb {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.glyph .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) calc(var(--d) + var(--stagger, 0s)) both;
+}
+
+.glyph .pop {
+  animation: pop 0.35s ease-out calc(var(--d) + 0.8s) both;
+}
+
+@keyframes settle {
+  from { color: var(--c); }
+}
+
+@keyframes draw {
+  from { stroke-dashoffset: 1; }
+}
+
+@keyframes pop {
+  from { opacity: 0; }
+}
+
+/* rolomux: the rolodex flips through session cards, each with its own lines and selected row */
+.glyph-rolomux { --c: #b5bd68; }
+
+.glyph .rl-card { transform-origin: 16px 22px; }
+.rl-back { --stagger: 0.2s; }
+.rl-label { --stagger: 0.3s; }
+.rl-label2 { --stagger: 0.4s; }
+.rl-l3 { opacity: 0; }
+
+.project a:is(:hover, :focus-visible) .rl-card { animation: rl-flip 3.2s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .rl-dot { animation: rl-row 3.2s steps(1, end) infinite; }
+.project a:is(:hover, :focus-visible) .rl-l2 { animation: rl-l2 3.2s steps(1, end) infinite; }
+.project a:is(:hover, :focus-visible) .rl-l3 { animation: rl-l3 3.2s steps(1, end) infinite; }
+
+@keyframes rl-flip {
+  0% { transform: scaleY(1); }
+  8% { transform: scaleY(0); }
+  16%, 22% { transform: scaleY(1); }
+  30% { transform: scaleY(0); }
+  38%, 44% { transform: scaleY(1); }
+  52% { transform: scaleY(0); }
+  60%, 66% { transform: scaleY(1); }
+  74% { transform: scaleY(0); }
+  82%, 100% { transform: scaleY(1); }
+}
+
+/* the card swaps while edge-on (8/30/52/74%): 2 lines/row 1 at rest, then 3/row 2, 1/row 1, 3/row 3 */
+@keyframes rl-row {
+  0% { transform: translateY(0); }
+  8% { transform: translateY(3.5px); }
+  30% { transform: translateY(0); }
+  52% { transform: translateY(7px); }
+  74%, 100% { transform: translateY(0); }
+}
+
+@keyframes rl-l2 {
+  0% { opacity: 1; }
+  30% { opacity: 0; }
+  52%, 100% { opacity: 1; }
+}
+
+@keyframes rl-l3 {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  30% { opacity: 0; }
+  52% { opacity: 1; }
+  74%, 100% { opacity: 0; }
+}
+
+/*
+ * boomerang: a spark above someone's head flies into a GitHub issue ring and
+ * comes back below them as a filed card. Both arcs lie on one circle (center
+ * 14.75,16, r 13.27) and stop short of the ring; the flight paths add a short
+ * drop into and out of the ring.
+ */
+.glyph-boomerang { --c: #de935f; }
+
+.bm-arc { opacity: 0.45; }
+.bm-person { --stagger: 0.1s; }
+.bm-ring { --stagger: 0.2s; }
+.bm-back { --stagger: 0.35s; }
+.bm-rays line { stroke-width: 1.5; }
+
+.bm-out {
+  offset-path: path("M5 7 A13.27 13.27 0 0 1 24.5 7 L24.5 16");
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+}
+
+.bm-return {
+  offset-path: path("M24.5 16 L24.5 25 A13.27 13.27 0 0 1 5 25");
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+}
+
+/* offset-path lives on the carriers and scale on their children; on one element, scale would shrink the path position too */
+.bm-spark,
+.bm-card,
+.bm-core {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.bm-card,
+.bm-core { transform: scale(0); }
+
+.project a:is(:hover, :focus-visible) .bm-out { animation: bm-out 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-spark { animation: bm-spark 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-rays { animation: bm-rays 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-ring { animation: bm-ring 2.8s ease-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-core { animation: bm-core 2.8s ease-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-return { animation: bm-return 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bm-card { animation: bm-card 2.8s ease-in-out infinite; }
+
+@keyframes bm-out {
+  0%, 10% { offset-distance: 0%; }
+  40%, 44% { offset-distance: 100%; }
+  45%, 100% { offset-distance: 0%; }
+}
+
+@keyframes bm-spark {
+  0% { transform: scale(1); }
+  5% { transform: scale(1.3); }
+  10%, 38% { transform: scale(1); }
+  44%, 90% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bm-rays {
+  0% { opacity: 1; }
+  5% { opacity: 1; transform: scale(1.15); }
+  14%, 92% { opacity: 0; transform: scale(1); }
+  100% { opacity: 1; }
+}
+
+@keyframes bm-ring {
+  0%, 40% { stroke: currentColor; }
+  47% { stroke: var(--hot); }
+  58%, 100% { stroke: currentColor; }
+}
+
+/* the ring stays empty until the spark lands, then the issue dot pops in */
+@keyframes bm-core {
+  0%, 42% { transform: scale(0); }
+  47% { transform: scale(1.8); }
+  54%, 90% { transform: scale(1); }
+  97%, 100% { transform: scale(0); }
+}
+
+@keyframes bm-return {
+  0%, 50% { offset-distance: 0%; }
+  82%, 100% { offset-distance: 100%; }
+}
+
+@keyframes bm-card {
+  0%, 50% { transform: scale(0); }
+  56%, 88% { transform: scale(1); }
+  94%, 100% { transform: scale(0); }
+}
+
+/* teleport: the dot drops into one portal and steps out of the other */
+.glyph-teleport { --c: #7aa6da; }
+
+.tp-ring { fill: currentColor; }
+.tp-in, .tp-out { fill-opacity: 0.14; }
+.tp-out { --stagger: 0.15s; }
+.tp-dot { transform: translate(2.5px, 16px); }
+
+.project a:is(:hover, :focus-visible) .tp-dot { animation: tp-hop 2.4s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .tp-in { animation: tp-flash-in 2.4s ease-out infinite; }
+.project a:is(:hover, :focus-visible) .tp-out { animation: tp-flash-out 2.4s ease-out infinite; }
+
+@keyframes tp-hop {
+  0% { transform: translate(2.5px, 16px) scale(1); opacity: 1; }
+  22% { transform: translate(9px, 16px) scale(1); }
+  30% { transform: translate(9px, 16px) scale(0); }
+  42% { transform: translate(23px, 16px) scale(0); }
+  50% { transform: translate(23px, 16px) scale(1); }
+  70% { transform: translate(29.5px, 16px) scale(1); opacity: 1; }
+  85% { transform: translate(29.5px, 16px) scale(1); opacity: 0; }
+  86% { transform: translate(2.5px, 16px) scale(0); opacity: 0; }
+  100% { transform: translate(2.5px, 16px) scale(1); opacity: 1; }
+}
+
+@keyframes tp-flash-in {
+  0%, 20% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
+  30% { stroke: var(--hot); stroke-width: 3; fill-opacity: 0.45; }
+  45%, 100% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
+}
+
+@keyframes tp-flash-out {
+  0%, 36% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
+  46% { stroke: var(--hot); stroke-width: 3; fill-opacity: 0.45; }
+  60%, 100% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
+}
+
+/* backlog: the cursor fuzzy-searches a neat shelf of games and pulls one out */
+.glyph-backlog { --c: #c397d8; }
+
+.bl-2 { --stagger: 0.12s; }
+.bl-3 { --stagger: 0.24s; }
+.bl-dot { transform: translate(2px, 8.5px); }
+
+.project a:is(:hover, :focus-visible) .bl-dot { animation: bl-seek 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bl-pick { animation: bl-pull 2.8s ease-in-out infinite; }
+
+@keyframes bl-seek {
+  0%, 5% { transform: translate(2px, 8.5px); }
+  18% { transform: translate(2px, 15.5px); }
+  31% { transform: translate(2px, 22.5px); }
+  44%, 90% { transform: translate(2px, 15.5px); }
+  100% { transform: translate(2px, 8.5px); }
+}
+
+@keyframes bl-pull {
+  0%, 46% { transform: translateX(0); stroke: currentColor; }
+  56%, 84% { transform: translateX(4px); stroke: var(--hot); }
+  94%, 100% { transform: translateX(0); stroke: currentColor; }
+}
+
+/* rastermaster: the spindle cuts the serpentine toolpath */
+.glyph-rastermaster { --c: #f0c674; }
+
+.rm-path { transition: opacity 0.3s ease; }
+
+.rm-cut {
+  stroke: var(--hot);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+
+.rm-dot {
+  offset-path: path("M6 8 H26 V13 H6 V18 H26 V23 H6");
+  offset-distance: 0%;
+  offset-rotate: 0deg;
+}
+
+.project a:is(:hover, :focus-visible) .rm-path { opacity: 0.3; }
+.project a:is(:hover, :focus-visible) .rm-cut { animation: rm-cut 2.6s linear infinite; }
+.project a:is(:hover, :focus-visible) .rm-dot { animation: rm-spindle 2.6s linear infinite; }
+
+@keyframes rm-cut {
+  0% { stroke-dashoffset: 1; opacity: 1; }
+  75% { stroke-dashoffset: 0; opacity: 1; }
+  92% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes rm-spindle {
+  0% { offset-distance: 0%; }
+  75%, 100% { offset-distance: 100%; }
+}
+
+/*
+ * discography: the dot is a chart-recorder pen fixed at x=24 that only moves
+ * vertically, and the square wave it leaves scrolls left. Risers slant 0.75
+ * units so the trace matches the pen's travel.
+ */
+.glyph-discography { --c: #d787af; }
+
+/* the left fade is a CSS mask on the svg box; an SVG <mask> gradient was misplaced on the scrolling group */
+.glyph-discography svg {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent 12%, #000 45%);
+  mask-image: linear-gradient(to right, transparent 12%, #000 45%);
+}
+
+/*
+ * The trace ends exactly under the pen via its dash length, not a clip, so
+ * steep risers never get sliced. Lengths are real path units: flats are 5.25,
+ * risers are hypot(0.75, 10) = 10.028, and the pen sits 61.112 units in (two
+ * full periods) at rest.
+ */
+.pen-trace {
+  stroke-dasharray: 61.112 1000;
+  animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both;
+}
+
+/* pen-draw stays in the list so un-hovering doesn't replay the load draw-in */
+.project a:is(:hover, :focus-visible) .pen-trace {
+  animation: pen-draw 0.9s cubic-bezier(0.6, 0, 0.3, 1) var(--d) both, pen-trace 1.2s linear infinite;
+}
+.project a:is(:hover, :focus-visible) .pen-wave { animation: pen-scroll 1.2s linear infinite; }
+.project a:is(:hover, :focus-visible) .pen-dot { animation: pen-ride 1.2s linear infinite; }
+
+@keyframes pen-draw {
+  from { stroke-dasharray: 0 1000; }
+  to { stroke-dasharray: 61.112 1000; }
+}
+
+@keyframes pen-trace {
+  0% { stroke-dasharray: 61.112 1000; }
+  43.75% { stroke-dasharray: 66.362 1000; }
+  50% { stroke-dasharray: 76.39 1000; }
+  93.75% { stroke-dasharray: 81.64 1000; }
+  100% { stroke-dasharray: 91.669 1000; }
+}
+
+@keyframes pen-scroll {
+  to { transform: translateX(-12px); }
+}
+
+/* the wave at x=24 over one 12-unit period: high 5.25, fall 0.75, low 5.25, rise 0.75 */
+@keyframes pen-ride {
+  0%, 43.75% { transform: translateY(0); }
+  50%, 93.75% { transform: translateY(10px); }
+  100% { transform: translateY(0); }
 }
 
 .name {
@@ -259,8 +564,9 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   body::before,
   .title,
-  .tagline,
-  .project {
-    animation: none;
+  .project,
+  .glyph,
+  .glyph * {
+    animation: none !important;
   }
 }
