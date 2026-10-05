@@ -4,9 +4,40 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>jeffdt</title>
-        <link rel="stylesheet" href="style.css?v=20261005" />
+        <link rel="icon" href="astronaut.svg" type="image/svg+xml" />
+        <link rel="icon" href="favicon.png" type="image/png" sizes="64x64" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+        <link rel="stylesheet" href="style.css?v=20261005h" />
     </head>
     <body>
+        <svg class="astronaut" viewBox="-4 -8 72 72" aria-hidden="true">
+            <defs>
+                <linearGradient id="astronaut-visor" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#7aa6da" />
+                    <stop offset="1" stop-color="#c397d8" />
+                </linearGradient>
+            </defs>
+            <g stroke-linecap="round" fill="none">
+                <g class="antenna">
+                    <line x1="40" y1="10.5" x2="43" y2="4.5" stroke="#c5c8c6" stroke-width="1.6" />
+                    <circle class="signal" cx="43" cy="4.5" r="3" stroke="#8abeb7" stroke-width="1.2" />
+                    <circle class="signal" cx="43" cy="4.5" r="3" stroke="#c397d8" stroke-width="1.2" />
+                    <circle class="tip" cx="43" cy="4.5" r="2.2" fill="#8abeb7" />
+                </g>
+                <rect x="17" y="27" width="30" height="22" rx="6" fill="#5c6370" />
+                <line class="limb far-arm" x1="23" y1="35" x2="11" y2="37" stroke="#c5c8c6" stroke-width="7" />
+                <line class="limb far-leg" x1="28" y1="49" x2="24" y2="58" stroke="#c5c8c6" stroke-width="8" />
+                <line class="limb near-leg" x1="37" y1="49" x2="41" y2="58" stroke="#eef0f2" stroke-width="8" />
+                <rect x="21" y="29" width="22" height="23" rx="8" fill="#eef0f2" />
+                <line class="limb near-arm" x1="42" y1="36" x2="53.5" y2="38" stroke="#eef0f2" stroke-width="7" />
+                <circle cx="32" cy="21" r="14" fill="#eef0f2" />
+                <rect x="21" y="14" width="22" height="14" rx="7" fill="url(#astronaut-visor)" />
+                <path d="M25 18.5 q2 -2 6 -2" stroke="#ffffff" stroke-opacity="0.75" stroke-width="1.8" />
+                <rect x="27" y="37" width="10" height="7" rx="2" fill="#3e4451" />
+                <circle cx="30" cy="40.5" r="1.4" fill="#8abeb7" />
+                <circle cx="34" cy="40.5" r="1.4" fill="#c397d8" />
+            </g>
+        </svg>
         <main>
             <header>
                 <h1><span class="title">jeffdt</span></h1>
@@ -156,7 +187,7 @@
                         <span class="glyph glyph-discography">
                             <svg viewBox="0 0 32 32" aria-hidden="true">
                                 <g class="pen-wave">
-                                    <path class="pen-trace" d="M0 11 H5.25 L6 21 H11.25 L12 11 H17.25 L18 21 H23.25 L24 11 H29.25 L30 21 H35.25 L36 11" />
+                                    <path class="pen-trace" d="M-4 11 H2.25 L3 21 H9.25 L10 11 H16.25 L17 21 H23.25 L24 11 H30.25 L31 21 H37.25 L38 11 H44.25 L45 21 H51.25 L52 11" />
                                 </g>
                                 <g class="pop"><circle class="dot pen-dot" cx="24" cy="11" r="2.4" /></g>
                             </svg>
@@ -175,5 +206,6 @@
             </ul>
         </main>
         <script src="glow.js"></script>
+        <script src="astronaut.js"></script>
     </body>
 </html>
