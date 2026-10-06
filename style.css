@@ -279,8 +279,8 @@ main {
 
 /*
  * Project glyphs: 32x32 viewBox, 2-unit round strokes, a compact line drawing
- * plus one dot. Each draws in with its project color on load, settles to gray,
- * and lights up and loops while its card is hovered or focused.
+ * plus one dot. Each draws in gray on load, then lights up and loops while its
+ * card is hovered or focused.
  */
 .glyph {
   --d: calc(0.7s + var(--i, 0) * 80ms);
@@ -292,7 +292,6 @@ main {
   margin-right: 1.1rem;
   color: var(--rest);
   transition: color 0.3s ease;
-  animation: settle 0.8s ease calc(var(--d) + 1.3s) backwards;
 }
 
 .project a:is(:hover, :focus-visible) .glyph {
@@ -330,10 +329,6 @@ main {
 
 .glyph .pop {
   animation: pop 0.35s ease-out calc(var(--d) + 0.8s) both;
-}
-
-@keyframes settle {
-  from { color: var(--c); }
 }
 
 @keyframes draw {
@@ -399,7 +394,7 @@ main {
  * 14.75,16, r 13.27) and stop short of the ring; the flight paths add a short
  * drop into and out of the ring.
  */
-.project-boomerang { --c: #de935f; }
+.project-boomerang { --c: #cc6666; }
 
 .bm-arc { opacity: 0.45; }
 .bm-person { --stagger: 0.1s; }
@@ -485,7 +480,7 @@ main {
 }
 
 /* teleport: the dot drops into one portal and steps out of the other */
-.project-teleport { --c: #7aa6da; }
+.project-teleport { --c: #81a2be; }
 
 .tp-ring { fill: currentColor; }
 .tp-in, .tp-out { fill-opacity: 0.14; }
@@ -521,7 +516,7 @@ main {
 }
 
 /* backlog: the cursor fuzzy-searches a neat shelf of games and pulls one out */
-.project-backlog { --c: #c397d8; }
+.project-backlog { --c: #b294bb; }
 
 .bl-2 { --stagger: 0.12s; }
 .bl-3 { --stagger: 0.24s; }
@@ -583,7 +578,7 @@ main {
  * vertically, and the square wave it leaves scrolls left. Risers slant 0.75
  * units so the trace matches the pen's travel.
  */
-.project-discography { --c: #d787af; }
+.project-discography { --c: #8abeb7; }
 
 /* the left fade is a CSS mask on the svg box; an SVG <mask> gradient was misplaced on the scrolling group */
 .glyph-discography svg {
@@ -642,7 +637,8 @@ main {
 
 .name::before {
   content: "$ ";
-  color: var(--c);
+  color: var(--muted);
+  transition: color 0.15s ease;
 }
 
 .desc {
@@ -654,9 +650,15 @@ main {
 
 .link {
   display: block;
-  color: var(--c);
+  color: var(--muted);
   font-size: 0.8rem;
   margin-top: 0.5rem;
+  transition: color 0.15s ease;
+}
+
+.project a:is(:hover, :focus-visible) .name::before,
+.project a:is(:hover, :focus-visible) .link {
+  color: var(--c);
 }
 
 .tags {
