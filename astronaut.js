@@ -13,8 +13,12 @@ const POINTER_STILL_SEC = 0.08;
 const MAX_POINTER_SPEED_PX_PER_SEC = 3000;
 const MAX_SPEED_PX_PER_SEC = 150;
 const MAX_SPIN_KICK_DEG_PER_SEC = 80;
-// Seconds for speed and spin to ease back to a lazy drift after a shove.
-const RELAX_SEC = 3;
+// Seconds for extra speed and spin to bleed off while he's pressed into a wall; open space keeps them.
+const WALL_SCRUB_SEC = 1;
+// Seconds for a near-stall to build back up to a drift, so a slow swipe can't park him.
+const RECOVER_SEC = 3;
+// Seconds for his entrance speed to ease down to a drift.
+const ENTRY_SETTLE_SEC = 3;
 // Each limb's random swing range in degrees around its drawn pose.
 const LIMB_RANGES = {
   ".far-arm": [-35, 35],
@@ -41,7 +45,7 @@ const WALL_DAMPING = 1.2;
 const MAX_OVERSHOOT_FRACTION = 0.75;
 // Caps the step after a backgrounded tab resumes so he doesn't teleport.
 const MAX_FRAME_SEC = 0.1;
-// Launch speed for his entrance from offscreen; relax() eases it back to a drift.
+// Launch speed for his entrance from offscreen; relax() eases it down to a drift.
 const ENTRY_SPEED_PX_PER_SEC = 90;
 // He aims for a random point within this centered fraction of the screen, so entrances vary.
 const ENTRY_TARGET_FRACTION = 0.5;
@@ -64,6 +68,7 @@ if (astronaut && !prefersStill) {
   let { x, y, vx, vy } = entryPath();
   // Walls and the overshoot clamp stay off until he has floated in, or they'd yank him onscreen.
   let entering = true;
+  let settling = true;
   let angle = Math.random() * 360;
   let baseSpin = randomSpin();
   let spinKick = 0;
@@ -154,14 +159,20 @@ if (astronaut && !prefersStill) {
     spinKick = Math.max(-MAX_SPIN_KICK_DEG_PER_SEC, Math.min(spinKick, MAX_SPIN_KICK_DEG_PER_SEC));
   }
 
-  /** Eases speed back toward a cruise and lets any spin kick fade out. */
+  /** Eases speed toward a cruise, but only sheds a shove's extra speed and spin against a wall, as in space. */
   function relax(dt) {
-    const blend = 1 - Math.exp(-dt / RELAX_SEC);
     const speed = Math.hypot(vx, vy) || 1;
+    const scraping = touchingWallX || touchingWallY;
+    if (settling && speed <= SPEED_PX_PER_SEC + 1) settling = false;
+    let easeSec = Infinity;
+    if (speed < SPEED_PX_PER_SEC) easeSec = RECOVER_SEC;
+    else if (scraping) easeSec = WALL_SCRUB_SEC;
+    else if (settling) easeSec = ENTRY_SETTLE_SEC;
+    const blend = 1 - Math.exp(-dt / easeSec);
     const nextSpeed = Math.min(speed + (SPEED_PX_PER_SEC - speed) * blend, MAX_SPEED_PX_PER_SEC);
     vx *= nextSpeed / speed;
     vy *= nextSpeed / speed;
-    spinKick -= spinKick * blend;
+    if (scraping) spinKick -= spinKick * (1 - Math.exp(-dt / WALL_SCRUB_SEC));
   }
 
   /** Sets how fast his limbs move, in proportion to how much a nudge has stirred him up. */
