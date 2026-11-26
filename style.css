@@ -272,9 +272,26 @@ main {
 }
 
 .info {
-  display: block;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  align-items: center;
   flex: 1;
   min-width: 0;
+}
+
+.name,
+.desc {
+  grid-column: 1 / -1;
+}
+
+/* Tags and URL share a footer row; narrow screens stack them instead. */
+.tags { grid-row: 3; grid-column: 1; }
+.info .link { grid-row: 3; grid-column: 2; margin-top: 0.75rem; }
+
+@media (max-width: 480px) {
+  .info { display: block; }
+  .info .link { margin-top: 0.5rem; }
 }
 
 /*
@@ -515,28 +532,42 @@ main {
   60%, 100% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
 }
 
-/* backlog: the cursor fuzzy-searches a neat shelf of games and pulls one out */
-.project-backlog { --c: #b294bb; }
+/* bouncer: pong; a low shot slips under the paddle into your library, then the paddle dives to block the next */
+.project-bouncer { --c: #b294bb; }
 
-.bl-2 { --stagger: 0.12s; }
-.bl-3 { --stagger: 0.24s; }
-.bl-dot { transform: translate(2px, 8.5px); }
+.bc-lib { fill: currentColor; stroke: none; }
+.bc-slot { fill: currentColor; stroke: none; opacity: 0.18; }
+.bc-paddle { transform-box: view-box; transform: translateY(-9px); }
+.bc-in { transform: translate(2.5px, 22px); }
+.bc-out { transform: translate(2.5px, 10px) scale(0); opacity: 0; }
 
-.project a:is(:hover, :focus-visible) .bl-dot { animation: bl-seek 2.8s ease-in-out infinite; }
-.project a:is(:hover, :focus-visible) .bl-pick { animation: bl-pull 2.8s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bc-paddle { animation: bc-paddle 3.4s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bc-in { animation: bc-in 3.4s ease-in-out infinite; }
+.project a:is(:hover, :focus-visible) .bc-out { animation: bc-out 3.4s ease-in-out infinite; }
 
-@keyframes bl-seek {
-  0%, 5% { transform: translate(2px, 8.5px); }
-  18% { transform: translate(2px, 15.5px); }
-  31% { transform: translate(2px, 22.5px); }
-  44%, 90% { transform: translate(2px, 15.5px); }
-  100% { transform: translate(2px, 8.5px); }
+@keyframes bc-paddle {
+  0%, 40% { transform: translateY(-9px); stroke: currentColor; stroke-width: 2; }
+  54% { transform: translateY(0); }
+  62% { stroke: currentColor; stroke-width: 2; }
+  65% { stroke: var(--hot); stroke-width: 3; }
+  78% { transform: translateY(0); stroke: currentColor; stroke-width: 2; }
+  90%, 100% { transform: translateY(-9px); }
 }
 
-@keyframes bl-pull {
-  0%, 46% { transform: translateX(0); stroke: currentColor; }
-  56%, 84% { transform: translateX(4px); stroke: var(--hot); }
-  94%, 100% { transform: translateX(0); stroke: currentColor; }
+@keyframes bc-in {
+  0%, 4% { transform: translate(2.5px, 22px) scale(1); opacity: 1; }
+  28%, 88% { transform: translate(20px, 23px) scale(1); opacity: 1; }
+  94% { transform: translate(20px, 23px) scale(1); opacity: 0; }
+  95% { transform: translate(2.5px, 22px) scale(0); opacity: 0; }
+  100% { transform: translate(2.5px, 22px) scale(1); opacity: 1; }
+}
+
+@keyframes bc-out {
+  0%, 36% { transform: translate(2.5px, 10px) scale(0); opacity: 0; }
+  42% { transform: translate(2.5px, 10px) scale(1); opacity: 1; }
+  63% { transform: translate(8.8px, 16px) scale(1); opacity: 1; }
+  68% { transform: translate(7px, 18px) scale(1); opacity: 1; }
+  86%, 100% { transform: translate(-1px, 26px) scale(1); opacity: 0; }
 }
 
 /* rastermaster: the spindle cuts the serpentine toolpath */
@@ -652,6 +683,7 @@ main {
   display: block;
   color: var(--muted);
   font-size: 0.8rem;
+  font-style: italic;
   margin-top: 0.5rem;
   transition: color 0.15s ease;
 }
@@ -704,8 +736,9 @@ main {
   .project a .tp-in { animation: tp-flash-in 2.4s ease-out var(--loop-delay) infinite; }
   .project a .tp-out { animation: tp-flash-out 2.4s ease-out var(--loop-delay) infinite; }
 
-  .project a .bl-dot { animation: bl-seek 2.8s ease-in-out var(--loop-delay) infinite; }
-  .project a .bl-pick { animation: bl-pull 2.8s ease-in-out var(--loop-delay) infinite; }
+  .project a .bc-paddle { animation: bc-paddle 3.4s ease-in-out var(--loop-delay) infinite; }
+  .project a .bc-in { animation: bc-in 3.4s ease-in-out var(--loop-delay) infinite; }
+  .project a .bc-out { animation: bc-out 3.4s ease-in-out var(--loop-delay) infinite; }
 
   .project a .rm-path { opacity: 0.3; }
   .project a .rm-cut { animation: rm-cut 2.6s linear var(--loop-delay) infinite; }
