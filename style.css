@@ -515,8 +515,8 @@ main {
   60%, 100% { stroke: currentColor; stroke-width: 2; fill-opacity: 0.14; }
 }
 
-/* backlog: the cursor fuzzy-searches a neat shelf of games and pulls one out */
-.project-backlog { --c: #b294bb; }
+/* bouncer: the cursor fuzzy-searches a neat shelf of games and pulls one out */
+.project-bouncer { --c: #b294bb; }
 
 .bl-2 { --stagger: 0.12s; }
 .bl-3 { --stagger: 0.24s; }
